@@ -1,86 +1,82 @@
 #include "holberton.h"
-#include <stdarg.h>
+#include <stdlib.h>
+
 /**
- * _printf - print format
- * @format:char * - string
+ * check_for_specifiers - checks if there is a valid format specifier
+ * @format: possible format specifier
  *
- * Return: int - string length
+ * Return: pointer to valid function or NULL
+ */
+static int (*check_for_specifiers(const char *format))(va_list)
+{
+	unsigned int i;
+	print_t p[] = {
+		{"c", print_c},
+		{"s", print_s},
+		{"i", print_i},
+		{"d", print_d},
+		{"u", print_u},
+		{"b", print_b},
+		{"o", print_o},
+		{"x", print_x},
+		{"X", print_X},
+		{"p", print_p},
+		{"S", print_S},
+		{"r", print_r},
+		{"R", print_R},
+		{NULL, NULL}
+	};
+
+	for (i = 0; p[i].t != NULL; i++)
+	{
+		if (*(p[i].t) == *format)
+		{
+			break;
+		}
+	}
+	return (p[i].f);
+}
+
+/**
+ * _printf - prints anything
+ * @format: list of argument types passed to the function
+ *
+ * Return: number of characters printed
  */
 int _printf(const char *format, ...)
 {
-	int len = 0;
-	const char *string;
-	va_list arg;
+	unsigned int i = 0, count = 0;
+	va_list valist;
+	int (*f)(va_list);
 
-	va_start(arg, format);
-	if (format)
+	if (format == NULL)
+		return (-1);
+	va_start(valist, format);
+	while (format[i])
 	{
-		string = format;
-		len = get_strlen(string);
-		while (*format)
+		for (; format[i] != '%' && format[i]; i++)
 		{
-			if (*format == '%')
-			{
-				format++;
-				switch (*format)
-				{
-				case 's':
-				{
-					char *ret = va_arg(arg, char*);
-
-					while (*ret)
-					{
-						_putchar(*ret);
-						ret++;
-					}
-				}
-				break;
-				case 'c':
-					_putchar((char)va_arg(arg, int));
-				break;
-				case 'd':
-				{
-					int ret = va_arg(arg, int);
-
-					print_int(ret);
-				}
-				break;
-				case 'i':
-				{
-					int ret = va_arg(arg, int);
-
-					print_int(ret);
-				}
-				break;
-				case '%':
-				{
-					_putchar('%');
-				}
-				break;
-				case 'u':
-				{
-					int ret = va_arg(arg, unsigned int);
-
-					if (ret < 0)
-					{
-						ret = ret * -1;
-					}
-					print_int(ret);
-				}
-				break;
-				default:
-				{
-					_putchar(*format);
-				}
-				break;
-				}
-			}
-			else
-			{
-				_putchar(*format);
-			}
-			format++;
+			_putchar(format[i]);
+			count++;
 		}
+		if (!format[i])
+			return (count);
+		f = check_for_specifiers(&format[i + 1]);
+		if (f != NULL)
+		{
+			count += f(valist);
+			i += 2;
+			continue;
+		}
+		if (!format[i + 1])
+			return (-1);
+		_putchar(format[i]);
+		count++;
+		if (format[i + 1] == '%')
+			i += 2;
+		else
+			i++;
 	}
-	return (len);
+	va_end(valist);
+	return (count);
 }

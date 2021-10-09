@@ -1,96 +1,70 @@
-# _PRINTF MANUAL PAGE
-This is a customized sample of printf function in C programming language.
+.TH man 3 "19 June 2017" "0.10" "_printf man page"
+.SH NAME
+.B _printf
+- Formatted output conversion.
+.SH SYNOPSIS
+.B #include "holberton.h"
 
-## SYNOPSIS
-Prototype: int _printf(const char *format, ...);
+.B int _printf(const char *
+.I format
+.B , ...)
+.SH DESCRIPTION
+.B _printf()
+Prints to standard output under the control of a 
+.I format
+string that specifies how subsequent arguments are converted for output. 
+.SH Return value
+On successful return, these functions return the number of characters printed, excluding the null byte used to end output to strings.
 
-## DESCRIPTION
-The function _printf() produces output according to a format as described below. The function _printf() writes output to stdout, the standard output stream. This function writes the output under the control of a format string that specifies how subsequent arguments (or arguments accessed via the  variable-length argument facilities of stdarg.h Header file are converted for output.
+If an output error is encountered, a negative value is returned.
+.SH Format of the format string
+The format string is composed of 0 or more directives (ordinary characters that are not %), which are copied to the output stream. The format string is also composed of conversion specifications, each of which result in fetching zero or more subsequent arguments. Each conversion specification is introduced by the character % and ends with the conversion specifier.
+The argument must correspond properly with the conversion specifier. By default, the arguments are used in the order given.
+.SH The conversion specifier
+A character that specifies the type of conversion to be applied. The conversion specifiers and their meanings are:
+.TP
+.BR c
+The int argument is converted to an unsigned char, then the resulting character is written
+.TP
+.B s
+The const char * argument is expected to be a pointer to an array of character type (pointer to a string). Characters from the array are written up to a terminating null byte, but do ot include the terminating null byte.
+.TP
+.B S
+Prints a string. Non printable characters are printed as "\x" followed by their ASCII values in two digit hexadecimal
+.TP
+.B d, i
+The int argument is converted to signed decimal notation.
+.TP
+.B x, X
+The unsigned int argument is converted to unsigned lowercase hexadecimal notation(x), or unsigned uppercase hexadecimal notation(X).
+.TP
+.B u
+The unsigned int argument is converted to unsigned decimal notation
+.TP
+.B o, b
+The unsigned int argument is converted to unsigned octal notation(o) or binary notation(b).
+.TP
+.B p
+Address is printed in hexadecimal.
+.TP
+.B r
+Prints a string in reverse.
+.TP
+.B R
+Prints a string converted to rot13
+.TP
+.B %
+A '%' is written but no argument is converted. The complete version specification is '%%'
+.SH EXAMPLE
+To print the day of the year, where weekday and month are pointers to strings and day and year are integers:
 
-## FORMAT OF THE STRING
-The format string is a character string. The format string is composed of zero or more directives: ordinary characters (not %), which are copied unchanged to the output stream; and conversion specifications, each of which results in fetching zero or more subsequent arguments. Each conversion specification is introduced by the character %, and ends with a conversion specifier. The  arguments must correspond properly with the conversion specifier. By default, the arguments are used in the order given, where each conversion specifier asks for the next argument (and it is an error if insufficiently many arguments are given).
-
-## CONVERSION SPECIFIERS
-A character that specifies the type of conversion to be applied.   The  conversion
-specifiers and their meanings are:
-
-d, i   	The  int  argument is converted to signed decimal notation.  The precision,
-		if any, gives the minimum number of digits that must appear;  if  the  converted  value  requires  fewer digits, it is padded on the left with zeros. The default precision is 1.  When 0 is printed with an  explicit  precision 0, the output is empty.
-
-c      	The int argument is converted to an unsigned char, and the resulting character is written.
-
-s      	The const char * argument is expected to be a pointer  to  an  array of character type (			pointer to a string). Characters from the array are written up to (but not  including) a 			terminating  null byte ('\0'); 
-
-## RETURN VALUE 
-Upon successful return, these functions return the number of characters printed (excluding the null byte used to end output to strings). If an output error is encountered, a negative value is returned.
-
-## EXAMPLE
-This is a sample code:
-
-#include <limits.h>
-#include <stdio.h>
 #include "holberton.h"
 
-/**
- * main - Entry point
- *
- * Return: Always 0
- */
-int main(void)
-{
-    int len;
-    int len2;
-    unsigned int ui;
-    void *addr;
+_printf("%s, %s %d, %d\\n", weekday, month, day, year);
+.SH SEE ALSO
+.I printf(3)
+.SH BUGS
+No known bugs.
 
-    len = _printf("Let's try to printf a simple sentence.\n");
-    len2 = printf("Let's try to printf a simple sentence.\n");
-    ui = (unsigned int)INT_MAX + 1024;
-    addr = (void *)0x7ffe637541f0;
-    _printf("Length:[%d, %i]\n", len, len);
-    printf("Length:[%d, %i]\n", len2, len2);
-    _printf("Negative:[%d]\n", -762534);
-    printf("Negative:[%d]\n", -762534);
-    _printf("Unsigned:[%u]\n", ui);
-    printf("Unsigned:[%u]\n", ui);
-    _printf("Unsigned octal:[%o]\n", ui);
-    printf("Unsigned octal:[%o]\n", ui);
-    _printf("Unsigned hexadecimal:[%x, %X]\n", ui, ui);
-    printf("Unsigned hexadecimal:[%x, %X]\n", ui, ui);
-    _printf("Character:[%c]\n", 'H');
-    printf("Character:[%c]\n", 'H');
-    _printf("String:[%s]\n", "I am a string !");
-    printf("String:[%s]\n", "I am a string !");
-    _printf("Address:[%p]\n", addr);
-    printf("Address:[%p]\n", addr);
-    len = _printf("Percent:[%%]\n");
-    len2 = printf("Percent:[%%]\n");
-    _printf("Len:[%d]\n", len);
-    printf("Len:[%d]\n", len2);
-    return (0);
-}
-
-It gives the following output:
-
-Let's try to printf a simple sentence.
-Let's try to printf a simple sentence.
-Length:[39, 39]
-Length:[39, 39]
-Negative:[-762534]
-Negative:[-762534]
-Unsigned:[u]
-Unsigned:[2147484671]
-Unsigned octal:[o]
-Unsigned octal:[20000001777]
-Unsigned hexadecimal:[x, X]
-Unsigned hexadecimal:[800003ff, 800003FF]
-Character:[H]
-Character:[H]
-String:[I am a string !]
-String:[I am a string !]
-Address:[p]
-Address:[0x7ffe637541f0]
-Percent:[%]
-Percent:[%]
-Len:[13]
-Len:[12]
+AUTHOR
+Miriam Chiketa | Prosper Prosper
